@@ -8,6 +8,7 @@ from typing import Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.axes import Axes
 from scipy import stats
 
 
@@ -16,9 +17,9 @@ def plot_nis(
     dof: int,
     alpha: float = 0.05,
     t: Optional[np.ndarray] = None,
-    ax: Optional[plt.Axes] = None,
+    ax: Optional[Axes] = None,
     mark_outliers: bool = True,
-) -> plt.Axes:
+) -> Axes:
     """Plot NIS time series with chi-squared consistency bounds.
 
     Parameters

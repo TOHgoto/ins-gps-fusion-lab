@@ -21,10 +21,11 @@ Error growth: bias grows as sqrt(t) (random walk), velocity error from accel
 integrates to linear in t, position error integrates to quadratic in t.
 """
 
-from typing import Optional
+from typing import Any, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.figure import Figure
 
 
 class IMUModel:
@@ -139,8 +140,8 @@ class IMUModel:
         dt: float = 0.01,
         n_runs: int = 10,
         seed: Optional[int] = None,
-        ax=None,
-    ) -> plt.Figure:
+        ax: Any = None,
+    ) -> Figure:
         """Visualize bias and integrated error growth over time.
 
         Uses zero true motion; errors come purely from IMU noise.

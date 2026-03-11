@@ -3,19 +3,20 @@
 Visualizes P trace, diagonal elements, or 2D position uncertainty ellipse.
 """
 
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.axes import Axes
 
 
 def plot_covariance(
     P_history: Union[list[np.ndarray], np.ndarray],
     indices: Optional[list[int]] = None,
     t: Optional[np.ndarray] = None,
-    ax: Optional[plt.Axes] = None,
+    ax: Optional[Axes] = None,
     plot_trace: bool = True,
-) -> plt.Axes:
+) -> Axes:
     """Plot covariance matrix evolution over time.
 
     Parameters
@@ -73,9 +74,9 @@ def plot_position_ellipse(
     P: np.ndarray,
     x: np.ndarray,
     n_sigma: float = 2.0,
-    ax: Optional[plt.Axes] = None,
-    **kwargs,
-) -> plt.Axes:
+    ax: Optional[Axes] = None,
+    **kwargs: Any,
+) -> Axes:
     """Plot 2D position uncertainty ellipse from P[0:2, 0:2].
 
     Parameters
@@ -108,7 +109,7 @@ def plot_position_ellipse(
         fig, ax = plt.subplots(figsize=(6, 6))
 
     ell = Ellipse(
-        xy=(x[0], x[1]),
+        xy=(float(x[0]), float(x[1])),
         width=width,
         height=height,
         angle=angle,

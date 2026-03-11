@@ -4,7 +4,7 @@ Implements prediction, update, covariance propagation, Kalman gain,
 NIS output, Innovation Gating, and Joseph form for numerical stability.
 """
 
-from typing import Optional
+from typing import Optional, cast
 
 import numpy as np
 from scipy import stats
@@ -150,8 +150,8 @@ class KalmanFilter:
 
     def get_state(self) -> np.ndarray:
         """Return current state estimate."""
-        return self.x.copy()
+        return cast(np.ndarray, self.x.copy())
 
     def get_covariance(self) -> np.ndarray:
         """Return current state covariance."""
-        return self.P.copy()
+        return cast(np.ndarray, self.P.copy())

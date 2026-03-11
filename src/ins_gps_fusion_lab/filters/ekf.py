@@ -10,13 +10,13 @@ class EKF:
     TODO: Full implementation for nonlinear INS-GPS fusion.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
-    def predict(self):
+    def predict(self) -> None:
         """Prediction step. TODO."""
         pass
 
-    def update(self):
+    def update(self) -> None:
         """Update step. TODO."""
         pass

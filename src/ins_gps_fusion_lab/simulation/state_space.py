@@ -7,6 +7,8 @@ State: x = [p_x, p_y, p_z, v_x, v_y, v_z, b_ax, b_ay, b_az, b_gx, b_gy, b_gz]
 - b_g: gyroscope bias (3)
 """
 
+from typing import cast
+
 import numpy as np
 
 
@@ -27,7 +29,7 @@ def compute_F(dt: float) -> np.ndarray:
     F[0:3, 3:6] = dt * I3
     # v += -b_a * dt
     F[3:6, 6:9] = -dt * I3
-    return F
+    return cast(np.ndarray, F)
 
 
 def compute_B(dt: float) -> np.ndarray:
@@ -37,7 +39,7 @@ def compute_B(dt: float) -> np.ndarray:
     """
     B = np.zeros((12, 3))
     B[3:6, 0:3] = dt * np.eye(3)
-    return B
+    return cast(np.ndarray, B)
 
 
 def compute_G(dt: float) -> np.ndarray:
@@ -51,7 +53,7 @@ def compute_G(dt: float) -> np.ndarray:
     G[3:6, 0:3] = dt * I3  # w_a -> velocity
     G[6:9, 3:6] = I3  # w_ba -> b_a
     G[9:12, 6:9] = I3  # w_bg -> b_g
-    return G
+    return cast(np.ndarray, G)
 
 
 def compute_H() -> np.ndarray:
@@ -61,7 +63,7 @@ def compute_H() -> np.ndarray:
     """
     H = np.zeros((3, 12))
     H[0:3, 0:3] = np.eye(3)
-    return H
+    return cast(np.ndarray, H)
 
 
 def compute_Q(
@@ -83,4 +85,4 @@ def compute_Q(
     Qw[0:3, 0:3] = (sigma_acc**2) * dt * np.eye(3)
     Qw[3:6, 3:6] = (sigma_acc_rw**2) * dt * np.eye(3)
     Qw[6:9, 6:9] = (sigma_gyro_rw**2) * dt * np.eye(3)
-    return G @ Qw @ G.T
+    return cast(np.ndarray, G @ Qw @ G.T)

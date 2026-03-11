@@ -22,7 +22,7 @@ class TrajectoryGenerator:
         duration: float,
         velocity: Optional[np.ndarray] = None,
         start_pos: Optional[np.ndarray] = None,
-    ) -> tuple:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Generate straight-line trajectory at constant velocity.
 
         Parameters

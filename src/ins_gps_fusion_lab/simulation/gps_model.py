@@ -6,7 +6,7 @@ Outputs position measurements with:
 - Optional signal dropout (no measurement)
 """
 
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 import numpy as np
 
@@ -133,4 +133,4 @@ class GPSModel:
         residual : np.ndarray
             Innovation vector (3,).
         """
-        return np.asarray(measured_position) - np.asarray(predicted_position)
+        return cast(np.ndarray, np.asarray(measured_position) - np.asarray(predicted_position))
