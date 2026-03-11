@@ -3,8 +3,8 @@
 import numpy as np
 import pytest
 
-from filters.kalman_filter import KalmanFilter
-from simulation.state_space import compute_F, compute_B, compute_G, compute_H, compute_Q
+from ins_gps_fusion_lab.filters.kalman_filter import KalmanFilter
+from ins_gps_fusion_lab.simulation.state_space import compute_F, compute_B, compute_G, compute_H, compute_Q
 
 
 def _make_filter():

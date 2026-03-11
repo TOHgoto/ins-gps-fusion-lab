@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from simulation.gps_model import GPSModel
+from ins_gps_fusion_lab.simulation.gps_model import GPSModel
 
 
 def test_gps_reproducibility():

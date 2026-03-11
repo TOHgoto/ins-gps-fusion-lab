@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from simulation.imu_model import IMUModel
+from ins_gps_fusion_lab.simulation.imu_model import IMUModel
 
 
 def test_imu_reproducibility():

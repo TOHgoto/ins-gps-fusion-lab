@@ -8,11 +8,11 @@ from typing import Optional
 import numpy as np
 import matplotlib.pyplot as plt
 
-from simulation.trajectory_generator import TrajectoryGenerator
-from simulation.imu_model import IMUModel
-from simulation.gps_model import GPSModel
-from simulation.state_space import compute_F, compute_B, compute_H, compute_Q
-from filters.kalman_filter import KalmanFilter
+from ins_gps_fusion_lab.simulation.trajectory_generator import TrajectoryGenerator
+from ins_gps_fusion_lab.simulation.imu_model import IMUModel
+from ins_gps_fusion_lab.simulation.gps_model import GPSModel
+from ins_gps_fusion_lab.simulation.state_space import compute_F, compute_B, compute_H, compute_Q
+from ins_gps_fusion_lab.filters.kalman_filter import KalmanFilter
 
 
 def run_experiment(

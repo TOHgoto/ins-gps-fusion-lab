@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from simulation.state_space import compute_F, compute_B, compute_G, compute_H, compute_Q
+from ins_gps_fusion_lab.simulation.state_space import compute_F, compute_B, compute_G, compute_H, compute_Q
 
 
 def test_F_shape():

@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from simulation.trajectory_generator import TrajectoryGenerator
+from ins_gps_fusion_lab.simulation.trajectory_generator import TrajectoryGenerator
 
 
 def test_straight_line_shape():
