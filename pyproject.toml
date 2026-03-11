@@ -24,9 +24,21 @@ dev = [
 Repository = "https://github.com/your-username/ins-gps-fusion-lab"
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["simulation*", "filters*", "experiments*", "visualization*"]
+where = ["src"]
 
 [tool.pytest.ini_options]
-pythonpath = ["."]
+pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "B", "C4", "UP"]
+ignore = []
+
+[tool.mypy]
+python_version = "3.9"
+strict = true
+ignore_missing_imports = true
