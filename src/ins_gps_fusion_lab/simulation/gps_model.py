@@ -6,8 +6,9 @@ Outputs position measurements with:
 - Optional signal dropout (no measurement)
 """
 
+from typing import Optional, Union
+
 import numpy as np
-from typing import Optional, Tuple, Union
 
 
 class GPSModel:
@@ -48,7 +49,7 @@ class GPSModel:
     def generate_measurement(
         self,
         true_position: np.ndarray,
-    ) -> Tuple[np.ndarray, bool]:
+    ) -> tuple[np.ndarray, bool]:
         """Generate a single GPS position measurement.
 
         Parameters
@@ -86,7 +87,7 @@ class GPSModel:
     def generate_measurements(
         self,
         true_positions: np.ndarray,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Generate GPS measurements for a sequence of positions.
 
         Parameters

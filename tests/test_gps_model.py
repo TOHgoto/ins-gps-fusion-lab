@@ -1,7 +1,6 @@
 """Unit tests for GPS model."""
 
 import numpy as np
-import pytest
 
 from ins_gps_fusion_lab.simulation.gps_model import GPSModel
 
@@ -56,9 +55,7 @@ def test_gps_dropout_produces_invalid():
 def test_gps_outlier_increases_error():
     """With outlier_prob=1, errors are larger than normal noise."""
     gps_normal = GPSModel(sigma_pos=1.0, outlier_prob=0.0, seed=0)
-    gps_outlier = GPSModel(
-        sigma_pos=1.0, outlier_prob=1.0, outlier_scale=10.0, seed=0
-    )
+    gps_outlier = GPSModel(sigma_pos=1.0, outlier_prob=1.0, outlier_scale=10.0, seed=0)
     true_pos = np.array([0.0, 0.0, 0.0])
     errors_normal = []
     errors_outlier = []

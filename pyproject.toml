@@ -36,7 +36,11 @@ target-version = "py39"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "B", "C4", "UP"]
-ignore = []
+ignore = [
+    "N802", # Function name should be lowercase (e.g. test_G_shape)
+    "N803", # Argument name should be lowercase (e.g. Q_base)
+    "N806", # Variable in function should be lowercase (e.g. Q = ...)
+]
 
 [tool.mypy]
 python_version = "3.9"

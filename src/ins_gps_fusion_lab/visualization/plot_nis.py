@@ -4,10 +4,11 @@ NIS ~ chi-squared(dof) under consistency. Plots NIS with upper/lower bounds
 and marks outliers.
 """
 
-import numpy as np
+from typing import Optional
+
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy import stats
-from typing import Optional, List, Tuple
 
 
 def plot_nis(

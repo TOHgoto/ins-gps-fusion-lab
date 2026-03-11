@@ -26,8 +26,6 @@ def test_straight_line_constant_velocity():
 def test_straight_line_position_integration():
     """Position = start + velocity * t."""
     gen = TrajectoryGenerator(dt=0.01)
-    pos, vel, _ = gen.straight_line(
-        duration=1.0, velocity=[1.0, 0.0, 0.0], start_pos=[0, 0, 0]
-    )
+    pos, vel, _ = gen.straight_line(duration=1.0, velocity=[1.0, 0.0, 0.0], start_pos=[0, 0, 0])
     # n_steps = 100, last t = 99*0.01 = 0.99
     np.testing.assert_array_almost_equal(pos[-1], [0.99, 0.0, 0.0])

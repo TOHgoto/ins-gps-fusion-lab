@@ -21,9 +21,10 @@ Error growth: bias grows as sqrt(t) (random walk), velocity error from accel
 integrates to linear in t, position error integrates to quadratic in t.
 """
 
-import numpy as np
-from typing import Optional, Tuple
+from typing import Optional
+
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 class IMUModel:
@@ -62,14 +63,10 @@ class IMUModel:
         self.sigma_acc_rw = sigma_acc_rw
         self.sigma_gyro_rw = sigma_gyro_rw
         self.bias_acc = (
-            np.asarray(bias_acc_init, dtype=float)
-            if bias_acc_init is not None
-            else np.zeros(3)
+            np.asarray(bias_acc_init, dtype=float) if bias_acc_init is not None else np.zeros(3)
         )
         self.bias_gyro = (
-            np.asarray(bias_gyro_init, dtype=float)
-            if bias_gyro_init is not None
-            else np.zeros(3)
+            np.asarray(bias_gyro_init, dtype=float) if bias_gyro_init is not None else np.zeros(3)
         )
         self._rng = np.random.default_rng(seed)
 
@@ -78,7 +75,7 @@ class IMUModel:
         truth_acc: np.ndarray,
         truth_gyro: np.ndarray,
         dt: float,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Generate noisy IMU measurements from ground truth.
 
         Parameters

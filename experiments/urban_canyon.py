@@ -5,14 +5,15 @@ Simulate urban canyon with GPS outliers:
 """
 
 from typing import Optional
-import numpy as np
-import matplotlib.pyplot as plt
 
-from ins_gps_fusion_lab.simulation.trajectory_generator import TrajectoryGenerator
-from ins_gps_fusion_lab.simulation.imu_model import IMUModel
-from ins_gps_fusion_lab.simulation.gps_model import GPSModel
-from ins_gps_fusion_lab.simulation.state_space import compute_F, compute_B, compute_H, compute_Q
+import matplotlib.pyplot as plt
+import numpy as np
+
 from ins_gps_fusion_lab.filters.kalman_filter import KalmanFilter
+from ins_gps_fusion_lab.simulation.gps_model import GPSModel
+from ins_gps_fusion_lab.simulation.imu_model import IMUModel
+from ins_gps_fusion_lab.simulation.state_space import compute_B, compute_F, compute_H, compute_Q
+from ins_gps_fusion_lab.simulation.trajectory_generator import TrajectoryGenerator
 from ins_gps_fusion_lab.visualization.plot_nis import plot_nis
 
 
@@ -50,9 +51,7 @@ def _run_single(
     nis_list = []
 
     for k in range(1, n_steps):
-        acc_meas, _ = imu.generate_measurements(
-            accelerations[k - 1 : k], np.zeros((1, 3)), dt
-        )
+        acc_meas, _ = imu.generate_measurements(accelerations[k - 1 : k], np.zeros((1, 3)), dt)
         kf.predict(u=acc_meas[0])
 
         if k % gps_rate == 0:
@@ -104,27 +103,56 @@ def run_experiment(
 
     # Run 1: No gating
     est1, nis1, err1, t = _run_single(
-        positions, velocities, accelerations,
-        dt, gps_rate, use_gating=False, gate_alpha=None, R_scale=1.0,
-        gps=gps, imu=imu,
+        positions,
+        velocities,
+        accelerations,
+        dt,
+        gps_rate,
+        use_gating=False,
+        gate_alpha=None,
+        R_scale=1.0,
+        gps=gps,
+        imu=imu,
     )
 
     # Run 2: With gating (need fresh gps for same randomness - use same seed)
-    gps2 = GPSModel(sigma_pos=1.0, outlier_prob=0.1, outlier_scale=20.0, dropout_prob=0.0, seed=seed)
-    imu2 = IMUModel(sigma_acc=0.1, sigma_gyro=0.01, sigma_acc_rw=1e-4, sigma_gyro_rw=1e-5, seed=seed)
+    gps2 = GPSModel(
+        sigma_pos=1.0, outlier_prob=0.1, outlier_scale=20.0, dropout_prob=0.0, seed=seed
+    )
+    imu2 = IMUModel(
+        sigma_acc=0.1, sigma_gyro=0.01, sigma_acc_rw=1e-4, sigma_gyro_rw=1e-5, seed=seed
+    )
     est2, nis2, err2, _ = _run_single(
-        positions, velocities, accelerations,
-        dt, gps_rate, use_gating=True, gate_alpha=0.05, R_scale=1.0,
-        gps=gps2, imu=imu2,
+        positions,
+        velocities,
+        accelerations,
+        dt,
+        gps_rate,
+        use_gating=True,
+        gate_alpha=0.05,
+        R_scale=1.0,
+        gps=gps2,
+        imu=imu2,
     )
 
     # Run 3: Increased R (no gating)
-    gps3 = GPSModel(sigma_pos=1.0, outlier_prob=0.1, outlier_scale=20.0, dropout_prob=0.0, seed=seed)
-    imu3 = IMUModel(sigma_acc=0.1, sigma_gyro=0.01, sigma_acc_rw=1e-4, sigma_gyro_rw=1e-5, seed=seed)
+    gps3 = GPSModel(
+        sigma_pos=1.0, outlier_prob=0.1, outlier_scale=20.0, dropout_prob=0.0, seed=seed
+    )
+    imu3 = IMUModel(
+        sigma_acc=0.1, sigma_gyro=0.01, sigma_acc_rw=1e-4, sigma_gyro_rw=1e-5, seed=seed
+    )
     est3, nis3, err3, _ = _run_single(
-        positions, velocities, accelerations,
-        dt, gps_rate, use_gating=False, gate_alpha=None, R_scale=10.0,
-        gps=gps3, imu=imu3,
+        positions,
+        velocities,
+        accelerations,
+        dt,
+        gps_rate,
+        use_gating=False,
+        gate_alpha=None,
+        R_scale=10.0,
+        gps=gps3,
+        imu=imu3,
     )
 
     # Plot

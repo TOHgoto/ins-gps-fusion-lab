@@ -4,9 +4,10 @@ Implements prediction, update, covariance propagation, Kalman gain,
 NIS output, Innovation Gating, and Joseph form for numerical stability.
 """
 
+from typing import Optional
+
 import numpy as np
 from scipy import stats
-from typing import Optional, Tuple
 
 
 class KalmanFilter:
@@ -93,7 +94,7 @@ class KalmanFilter:
         z: np.ndarray,
         R: Optional[np.ndarray] = None,
         gate_alpha: Optional[float] = None,
-    ) -> Tuple[np.ndarray, float, bool]:
+    ) -> tuple[np.ndarray, float, bool]:
         """Update step with measurement.
 
         Parameters

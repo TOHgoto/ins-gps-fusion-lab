@@ -8,7 +8,6 @@ State: x = [p_x, p_y, p_z, v_x, v_y, v_z, b_ax, b_ay, b_az, b_gx, b_gy, b_gz]
 """
 
 import numpy as np
-from typing import Optional
 
 
 def compute_F(dt: float) -> np.ndarray:
@@ -49,9 +48,9 @@ def compute_G(dt: float) -> np.ndarray:
     """
     G = np.zeros((12, 9))
     I3 = np.eye(3)
-    G[3:6, 0:3] = dt * I3   # w_a -> velocity
-    G[6:9, 3:6] = I3       # w_ba -> b_a
-    G[9:12, 6:9] = I3     # w_bg -> b_g
+    G[3:6, 0:3] = dt * I3  # w_a -> velocity
+    G[6:9, 3:6] = I3  # w_ba -> b_a
+    G[9:12, 6:9] = I3  # w_bg -> b_g
     return G
 
 
@@ -81,7 +80,7 @@ def compute_Q(
     """
     G = compute_G(dt)
     Qw = np.zeros((9, 9))
-    Qw[0:3, 0:3] = (sigma_acc ** 2) * dt * np.eye(3)
-    Qw[3:6, 3:6] = (sigma_acc_rw ** 2) * dt * np.eye(3)
-    Qw[6:9, 6:9] = (sigma_gyro_rw ** 2) * dt * np.eye(3)
+    Qw[0:3, 0:3] = (sigma_acc**2) * dt * np.eye(3)
+    Qw[3:6, 3:6] = (sigma_acc_rw**2) * dt * np.eye(3)
+    Qw[6:9, 6:9] = (sigma_gyro_rw**2) * dt * np.eye(3)
     return G @ Qw @ G.T

@@ -1,7 +1,6 @@
 """Unit tests for IMU model."""
 
 import numpy as np
-import pytest
 
 from ins_gps_fusion_lab.simulation.imu_model import IMUModel
 

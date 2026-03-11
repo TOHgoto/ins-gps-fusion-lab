@@ -7,14 +7,15 @@ Simulate 20s GPS loss in the middle of a 60s run:
 """
 
 from typing import Optional
-import numpy as np
-import matplotlib.pyplot as plt
 
-from ins_gps_fusion_lab.simulation.trajectory_generator import TrajectoryGenerator
-from ins_gps_fusion_lab.simulation.imu_model import IMUModel
-from ins_gps_fusion_lab.simulation.gps_model import GPSModel
-from ins_gps_fusion_lab.simulation.state_space import compute_F, compute_B, compute_H, compute_Q
+import matplotlib.pyplot as plt
+import numpy as np
+
 from ins_gps_fusion_lab.filters.kalman_filter import KalmanFilter
+from ins_gps_fusion_lab.simulation.gps_model import GPSModel
+from ins_gps_fusion_lab.simulation.imu_model import IMUModel
+from ins_gps_fusion_lab.simulation.state_space import compute_B, compute_F, compute_H, compute_Q
+from ins_gps_fusion_lab.simulation.trajectory_generator import TrajectoryGenerator
 from ins_gps_fusion_lab.visualization.plot_covariance import plot_covariance
 
 
@@ -93,9 +94,7 @@ def run_experiment(
     # Main loop
     for k in range(1, n_steps):
         t_k = t[k]
-        acc_meas, _ = imu.generate_measurements(
-            accelerations[k - 1 : k], np.zeros((1, 3)), dt
-        )
+        acc_meas, _ = imu.generate_measurements(accelerations[k - 1 : k], np.zeros((1, 3)), dt)
         kf.predict(u=acc_meas[0])
 
         # GPS update only when not in dropout window

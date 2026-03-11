@@ -3,8 +3,9 @@
 TODO: Extend with circular, curved, etc. For now provides simple straight-line.
 """
 
-import numpy as np
 from typing import Optional
+
+import numpy as np
 
 
 class TrajectoryGenerator:

@@ -22,7 +22,9 @@ def parse_junit(junit_path: Path) -> dict:
 
     overall = {
         "total": int(suite.get("tests", 0)),
-        "passed": int(suite.get("tests", 0)) - int(suite.get("failures", 0)) - int(suite.get("errors", 0)),
+        "passed": int(suite.get("tests", 0))
+        - int(suite.get("failures", 0))
+        - int(suite.get("errors", 0)),
         "failed": int(suite.get("failures", 0)),
         "errors": int(suite.get("errors", 0)),
         "skipped": int(suite.get("skipped", 0)),
@@ -43,7 +45,9 @@ def parse_junit(junit_path: Path) -> dict:
         elif tc.find("skipped") is not None:
             status = "SKIP"
 
-        module = classname.replace("tests.", "").replace("test_", "").replace("ins_gps_fusion_lab.", "")
+        module = (
+            classname.replace("tests.", "").replace("test_", "").replace("ins_gps_fusion_lab.", "")
+        )
         if module not in by_module:
             by_module[module] = {"tests": [], "passed": 0, "failed": 0}
         by_module[module]["tests"].append({"name": name, "status": status, "time_sec": time_val})
@@ -86,7 +90,11 @@ def write_summary_md(data: dict) -> None:
     lines = [
         "# Test Results Summary",
         "",
-        f"**Run**: {datetime.now().strftime('%Y-%m-%d %H:%M')} | **Status**: {o.get('status', '?')} | **Total**: {o.get('total', 0)} tests in {o.get('time_sec', 0):.2f}s",
+        (
+            f"**Run**: {datetime.now().strftime('%Y-%m-%d %H:%M')} | "
+            f"**Status**: {o.get('status', '?')} | "
+            f"**Total**: {o.get('total', 0)} tests in {o.get('time_sec', 0):.2f}s"
+        ),
         "",
         "---",
         "",
@@ -135,7 +143,9 @@ def main():
     junit_path = REPORTS_DIR / "junit.xml"
 
     cmd = [
-        sys.executable, "-m", "pytest",
+        sys.executable,
+        "-m",
+        "pytest",
         "tests/",
         "-v",
         "--tb=short",

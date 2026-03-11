@@ -5,15 +5,16 @@ Decay back when NIS normalizes. Compare fixed Q vs adaptive Q on Q-mismatch scen
 """
 
 from typing import Optional
-import numpy as np
+
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy import stats
 
-from ins_gps_fusion_lab.simulation.trajectory_generator import TrajectoryGenerator
-from ins_gps_fusion_lab.simulation.imu_model import IMUModel
-from ins_gps_fusion_lab.simulation.gps_model import GPSModel
-from ins_gps_fusion_lab.simulation.state_space import compute_F, compute_B, compute_H, compute_Q
 from ins_gps_fusion_lab.filters.kalman_filter import KalmanFilter
+from ins_gps_fusion_lab.simulation.gps_model import GPSModel
+from ins_gps_fusion_lab.simulation.imu_model import IMUModel
+from ins_gps_fusion_lab.simulation.state_space import compute_B, compute_F, compute_H, compute_Q
+from ins_gps_fusion_lab.simulation.trajectory_generator import TrajectoryGenerator
 from ins_gps_fusion_lab.visualization.plot_nis import plot_nis
 
 
@@ -56,9 +57,7 @@ def run_with_adaptive_q(
     current_q_scale = 1.0
 
     for k in range(1, n_steps):
-        acc_meas, _ = imu.generate_measurements(
-            accelerations[k - 1 : k], np.zeros((1, 3)), dt
-        )
+        acc_meas, _ = imu.generate_measurements(accelerations[k - 1 : k], np.zeros((1, 3)), dt)
         kf.predict(u=acc_meas[0], Q=Q_base * current_q_scale)
 
         if k % gps_rate == 0:
@@ -121,7 +120,9 @@ def run_experiment(
     P0 = np.eye(12) * 0.1
 
     kf_fixed = KalmanFilter(x=x0.copy(), P=P0.copy(), F=F, Q=Q_small, H=H, R=R, B=B)
-    imu_fixed = IMUModel(sigma_acc=0.1, sigma_gyro=0.01, sigma_acc_rw=1e-3, sigma_gyro_rw=1e-4, seed=seed)
+    imu_fixed = IMUModel(
+        sigma_acc=0.1, sigma_gyro=0.01, sigma_acc_rw=1e-3, sigma_gyro_rw=1e-4, seed=seed
+    )
     gps_fixed = GPSModel(sigma_pos=1.0, outlier_prob=0.0, dropout_prob=0.0, seed=seed)
 
     est_fixed = np.zeros((n_steps, 3))
@@ -144,9 +145,14 @@ def run_experiment(
 
     # Adaptive Q run
     est_adapt, nis_adapt, err_adapt, _, q_scale_hist = run_with_adaptive_q(
-        positions, velocities, accelerations,
-        dt, gps_rate, Q_small,
-        gps, imu,
+        positions,
+        velocities,
+        accelerations,
+        dt,
+        gps_rate,
+        Q_small,
+        gps,
+        imu,
     )
 
     # Plot

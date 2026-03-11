@@ -3,14 +3,15 @@
 Visualizes P trace, diagonal elements, or 2D position uncertainty ellipse.
 """
 
-import numpy as np
+from typing import Optional, Union
+
 import matplotlib.pyplot as plt
-from typing import Optional, List, Union
+import numpy as np
 
 
 def plot_covariance(
-    P_history: Union[List[np.ndarray], np.ndarray],
-    indices: Optional[List[int]] = None,
+    P_history: Union[list[np.ndarray], np.ndarray],
+    indices: Optional[list[int]] = None,
     t: Optional[np.ndarray] = None,
     ax: Optional[plt.Axes] = None,
     plot_trace: bool = True,
@@ -56,7 +57,7 @@ def plot_covariance(
         ax.plot(t, trace, "b-", label="trace(P)", linewidth=2)
 
     if indices is not None:
-        for i, idx in enumerate(indices):
+        for _i, idx in enumerate(indices):
             diag = np.array([P_arr[k, idx, idx] for k in range(n_steps)])
             ax.plot(t, diag, "--", alpha=0.8, label=f"P[{idx},{idx}]")
 
