@@ -1,0 +1,193 @@
+{
+  "run_info": {
+    "timestamp": "2026-03-12T05:35:51",
+    "platform": "Mac",
+    "total_time_sec": 0.817
+  },
+  "overall": {
+    "total": 29,
+    "passed": 29,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "time_sec": 0.817,
+    "status": "PASS"
+  },
+  "by_module": {
+    "gps_model": {
+      "tests": [
+        {
+          "name": "test_gps_reproducibility",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_gps_output_shape",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_gps_batch_output_shape",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_gps_zero_noise_gives_truth",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_gps_dropout_produces_invalid",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_gps_outlier_increases_error",
+          "status": "PASS",
+          "time_sec": 0.001
+        },
+        {
+          "name": "test_gps_compute_residual",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_gps_sigma_per_axis",
+          "status": "PASS",
+          "time_sec": 0.0
+        }
+      ],
+      "passed": 8,
+      "failed": 0
+    },
+    "imu_model": {
+      "tests": [
+        {
+          "name": "test_imu_reproducibility",
+          "status": "PASS",
+          "time_sec": 0.001
+        },
+        {
+          "name": "test_imu_output_shape",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_imu_bias_grows_with_random_walk",
+          "status": "PASS",
+          "time_sec": 0.023
+        },
+        {
+          "name": "test_imu_zero_noise_gives_truth",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_imu_reset_bias",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_imu_plot_error_growth_runs",
+          "status": "PASS",
+          "time_sec": 0.136
+        }
+      ],
+      "passed": 6,
+      "failed": 0
+    },
+    "kalman_filter": {
+      "tests": [
+        {
+          "name": "test_predict_only_p_grows",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_update_shrinks_p",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_nis_chi_squared",
+          "status": "PASS",
+          "time_sec": 0.004
+        },
+        {
+          "name": "test_reproducibility",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_update_with_correct_measurement",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_innovation_gating_rejects_outlier",
+          "status": "PASS",
+          "time_sec": 0.0
+        }
+      ],
+      "passed": 6,
+      "failed": 0
+    },
+    "state_space": {
+      "tests": [
+        {
+          "name": "test_F_shape",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_F_identity_blocks",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_F_p_v_coupling",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_H_position_only",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_Q_positive_semidefinite",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_G_shape",
+          "status": "PASS",
+          "time_sec": 0.0
+        }
+      ],
+      "passed": 6,
+      "failed": 0
+    },
+    "trajectory_generator": {
+      "tests": [
+        {
+          "name": "test_straight_line_shape",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_straight_line_constant_velocity",
+          "status": "PASS",
+          "time_sec": 0.0
+        },
+        {
+          "name": "test_straight_line_position_integration",
+          "status": "PASS",
+          "time_sec": 0.0
+        }
+      ],
+      "passed": 3,
+      "failed": 0
+    }
+  }
+}

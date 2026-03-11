@@ -9,7 +9,7 @@ from datetime import datetime
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-REPORTS_DIR = REPO_ROOT / "reports" / "test_results"
+REPORTS_DIR = REPO_ROOT / "results" / "test_reports"
 
 
 def parse_junit(junit_path: Path) -> dict:
@@ -43,7 +43,7 @@ def parse_junit(junit_path: Path) -> dict:
         elif tc.find("skipped") is not None:
             status = "SKIP"
 
-        module = classname.replace("tests.", "").replace("test_", "")
+        module = classname.replace("tests.", "").replace("test_", "").replace("ins_gps_fusion_lab.", "")
         if module not in by_module:
             by_module[module] = {"tests": [], "passed": 0, "failed": 0}
         by_module[module]["tests"].append({"name": name, "status": status, "time_sec": time_val})
@@ -120,8 +120,8 @@ def write_summary_md(data: dict) -> None:
     lines.append("## File Layout")
     lines.append("")
     lines.append("```")
-    lines.append("reports/")
-    lines.append("└── test_results/")
+    lines.append("results/")
+    lines.append("└── test_reports/")
     lines.append("    ├── summary.md")
     lines.append("    ├── summary.json")
     lines.append("    ├── junit.xml")
