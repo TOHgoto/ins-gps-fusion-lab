@@ -16,19 +16,20 @@ from ins_gps_fusion_lab.simulation.gps_model import GPSModel
 from ins_gps_fusion_lab.simulation.imu_model import IMUModel
 from ins_gps_fusion_lab.simulation.state_space import compute_B, compute_F, compute_H, compute_Q
 from ins_gps_fusion_lab.simulation.trajectory_generator import TrajectoryGenerator
+from ins_gps_fusion_lab.visualization.animation_backends import GPSDropoutAnimationBackend
+from ins_gps_fusion_lab.visualization.animation_manager import AnimationManager
 from ins_gps_fusion_lab.visualization.plot_covariance import plot_covariance
 
 
-def run_experiment(
+def simulate_gps_dropout(
     duration: float = 60.0,
     dropout_start: float = 20.0,
     dropout_duration: float = 20.0,
     dt: float = 0.01,
     gps_rate: int = 10,
     seed: int = 42,
-    save_path: Optional[str] = None,
 ):
-    """Run GPS dropout experiment.
+    """Run GPS dropout simulation and return time-series data.
 
     Parameters
     ----------
@@ -44,8 +45,6 @@ def run_experiment(
         GPS measurement every gps_rate IMU steps.
     seed : int
         Random seed.
-    save_path : str or None
-        If set, save figure.
     """
     dropout_end = dropout_start + dropout_duration
 
@@ -115,7 +114,41 @@ def run_experiment(
         P_history.append(kf.P.copy())
 
     P_history = np.array(P_history)
-    t_P = np.arange(len(P_history)) * dt
+    pos_error = np.linalg.norm(positions - est_positions, axis=1)
+    p_trace = np.trace(P_history, axis1=1, axis2=2)
+
+    first_recovery_time = None
+    if first_recovery_k is not None:
+        first_recovery_time = float(first_recovery_k * dt)
+
+    return {
+        "t": t,
+        "positions": positions,
+        "est_positions": est_positions,
+        "pos_error": pos_error,
+        "P_history": P_history,
+        "p_trace": p_trace,
+        "nis_times": np.array([x[0] for x in nis_list]) * dt if nis_list else np.array([]),
+        "nis_values": np.array([x[1] for x in nis_list]) if nis_list else np.array([]),
+        "dropout_start": dropout_start,
+        "dropout_end": dropout_end,
+        "first_recovery_k": first_recovery_k,
+        "first_recovery_time": first_recovery_time,
+        "first_recovery_K_norm": first_recovery_K_norm,
+    }
+
+
+def _plot_static(data: dict, save_path: Optional[str] = None):
+    """Render the original static dashboard from simulation data."""
+    t = data["t"]
+    positions = data["positions"]
+    est_positions = data["est_positions"]
+    pos_error = data["pos_error"]
+    P_history = data["P_history"]
+    nis_times = data["nis_times"]
+    nis_values = data["nis_values"]
+    dropout_start = data["dropout_start"]
+    dropout_end = data["dropout_end"]
 
     # Plot
     fig, axes = plt.subplots(2, 2, figsize=(12, 9))
@@ -131,7 +164,6 @@ def run_experiment(
     axes[0, 0].grid(True, alpha=0.3)
 
     # Position error
-    pos_error = np.linalg.norm(positions - est_positions, axis=1)
     axes[0, 1].plot(t, pos_error, "g-")
     axes[0, 1].axvspan(dropout_start, dropout_end, alpha=0.2, color="gray")
     axes[0, 1].set_xlabel("Time (s)")
@@ -140,15 +172,13 @@ def run_experiment(
     axes[0, 1].grid(True, alpha=0.3)
 
     # P trace
-    plot_covariance(P_history, t=t_P, ax=axes[1, 0], indices=[0, 1, 2])
+    plot_covariance(P_history, t=t, ax=axes[1, 0], indices=[0, 1, 2])
     axes[1, 0].axvspan(dropout_start, dropout_end, alpha=0.2, color="gray")
     axes[1, 0].set_title("Covariance (P grows during dropout)")
 
     # NIS
-    if nis_list:
-        k_vals = np.array([x[0] for x in nis_list]) * dt
-        nis_vals = [x[1] for x in nis_list]
-        axes[1, 1].plot(k_vals, nis_vals, "o-", markersize=3)
+    if len(nis_values):
+        axes[1, 1].plot(nis_times, nis_values, "o-", markersize=3)
         axes[1, 1].axhline(y=3.0, color="r", linestyle="--", label="dof=3 mean")
         axes[1, 1].axvspan(dropout_start, dropout_end, alpha=0.2, color="gray")
     axes[1, 1].set_xlabel("Time (s)")
@@ -157,8 +187,8 @@ def run_experiment(
     axes[1, 1].legend()
     axes[1, 1].grid(True, alpha=0.3)
 
-    if first_recovery_K_norm is not None:
-        print(f"First post-recovery Kalman gain norm: {first_recovery_K_norm:.4f}")
+    if data["first_recovery_K_norm"] is not None:
+        print(f"First post-recovery Kalman gain norm: {data['first_recovery_K_norm']:.4f}")
 
     plt.suptitle("GPS Dropout Experiment (20s loss at 20-40s)")
     plt.tight_layout()
@@ -167,6 +197,64 @@ def run_experiment(
     else:
         plt.show()
     return fig
+
+
+def run_experiment(
+    duration: float = 60.0,
+    dropout_start: float = 20.0,
+    dropout_duration: float = 20.0,
+    dt: float = 0.01,
+    gps_rate: int = 10,
+    seed: int = 42,
+    save_path: Optional[str] = None,
+):
+    """Run GPS dropout experiment and produce static plots."""
+    data = simulate_gps_dropout(
+        duration=duration,
+        dropout_start=dropout_start,
+        dropout_duration=dropout_duration,
+        dt=dt,
+        gps_rate=gps_rate,
+        seed=seed,
+    )
+    return _plot_static(data, save_path=save_path)
+
+
+def run_animation(
+    duration: float = 60.0,
+    dropout_start: float = 20.0,
+    dropout_duration: float = 20.0,
+    dt: float = 0.01,
+    gps_rate: int = 10,
+    seed: int = 42,
+    fps: int = 20,
+    frame_stride: int = 20,
+    output_path: Optional[str] = None,
+    show: bool = True,
+):
+    """Run GPS dropout simulation and render an animation playback."""
+    data = simulate_gps_dropout(
+        duration=duration,
+        dropout_start=dropout_start,
+        dropout_duration=dropout_duration,
+        dt=dt,
+        gps_rate=gps_rate,
+        seed=seed,
+    )
+
+    step = max(1, int(frame_stride))
+    frame_indices = list(range(0, len(data["t"]), step))
+    if frame_indices[-1] != len(data["t"]) - 1:
+        frame_indices.append(len(data["t"]) - 1)
+
+    backend = GPSDropoutAnimationBackend(data)
+    manager = AnimationManager(backend=backend, frame_indices=frame_indices, fps=fps)
+
+    if output_path:
+        manager.save(output_path)
+    if show:
+        manager.show()
+    return manager
 
 
 if __name__ == "__main__":

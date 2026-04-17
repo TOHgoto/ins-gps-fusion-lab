@@ -15,6 +15,8 @@ from ins_gps_fusion_lab.simulation.gps_model import GPSModel
 from ins_gps_fusion_lab.simulation.imu_model import IMUModel
 from ins_gps_fusion_lab.simulation.state_space import compute_B, compute_F, compute_H, compute_Q
 from ins_gps_fusion_lab.simulation.trajectory_generator import TrajectoryGenerator
+from ins_gps_fusion_lab.visualization.animation_backends import AdaptiveQAnimationBackend
+from ins_gps_fusion_lab.visualization.animation_manager import AnimationManager
 from ins_gps_fusion_lab.visualization.plot_nis import plot_nis
 
 
@@ -81,14 +83,13 @@ def run_with_adaptive_q(
     return est_positions, nis_list, pos_error, t, q_scale_history
 
 
-def run_experiment(
+def simulate_adaptive_q(
     duration: float = 30.0,
     dt: float = 0.01,
     gps_rate: int = 10,
     seed: int = 42,
-    save_path: Optional[str] = None,
 ):
-    """Compare fixed Q vs adaptive Q on Q-mismatch scenario."""
+    """Run Q-mismatch simulation and return fixed vs adaptive time-series data."""
     gen = TrajectoryGenerator(dt=dt)
     positions, velocities, accelerations = gen.straight_line(
         duration=duration,
@@ -155,6 +156,33 @@ def run_experiment(
         imu,
     )
 
+    q_scale = np.array([1.0] + q_scale_hist)
+
+    return {
+        "t": t,
+        "positions": positions,
+        "est_fixed": est_fixed,
+        "est_adapt": est_adapt,
+        "err_fixed": err_fixed,
+        "err_adapt": err_adapt,
+        "nis_fixed_times": np.array([x[0] for x in nis_fixed]) if nis_fixed else np.array([]),
+        "nis_fixed_values": np.array([x[1] for x in nis_fixed]) if nis_fixed else np.array([]),
+        "q_scale": q_scale,
+    }
+
+
+def _plot_static(data: dict, save_path: Optional[str] = None):
+    """Render the original static dashboard from simulation data."""
+    t = data["t"]
+    positions = data["positions"]
+    est_fixed = data["est_fixed"]
+    est_adapt = data["est_adapt"]
+    err_fixed = data["err_fixed"]
+    err_adapt = data["err_adapt"]
+    nis_fixed_times = data["nis_fixed_times"]
+    nis_fixed_values = data["nis_fixed_values"]
+    q_scale = data["q_scale"]
+
     # Plot
     fig, axes = plt.subplots(2, 2, figsize=(12, 9))
 
@@ -175,12 +203,11 @@ def run_experiment(
     axes[0, 1].legend()
     axes[0, 1].grid(True, alpha=0.3)
 
-    if nis_fixed:
-        t_nis = np.array([x[0] for x in nis_fixed])
-        plot_nis(np.array([x[1] for x in nis_fixed]), dof=3, t=t_nis, ax=axes[1, 0])
+    if len(nis_fixed_values):
+        plot_nis(nis_fixed_values, dof=3, t=nis_fixed_times, ax=axes[1, 0])
         axes[1, 0].set_title("NIS (Fixed Q)")
 
-    axes[1, 1].plot(t[1:], q_scale_hist, "g-")
+    axes[1, 1].plot(t, q_scale, "g-")
     axes[1, 1].set_xlabel("Time (s)")
     axes[1, 1].set_ylabel("Q scale factor")
     axes[1, 1].set_title("Adaptive Q Scale Over Time")
@@ -193,6 +220,46 @@ def run_experiment(
     else:
         plt.show()
     return fig
+
+
+def run_experiment(
+    duration: float = 30.0,
+    dt: float = 0.01,
+    gps_rate: int = 10,
+    seed: int = 42,
+    save_path: Optional[str] = None,
+):
+    """Compare fixed Q vs adaptive Q on Q-mismatch scenario."""
+    data = simulate_adaptive_q(duration=duration, dt=dt, gps_rate=gps_rate, seed=seed)
+    return _plot_static(data, save_path=save_path)
+
+
+def run_animation(
+    duration: float = 30.0,
+    dt: float = 0.01,
+    gps_rate: int = 10,
+    seed: int = 42,
+    fps: int = 20,
+    frame_stride: int = 10,
+    output_path: Optional[str] = None,
+    show: bool = True,
+):
+    """Render adaptive-Q comparison as animated playback."""
+    data = simulate_adaptive_q(duration=duration, dt=dt, gps_rate=gps_rate, seed=seed)
+
+    step = max(1, int(frame_stride))
+    frame_indices = list(range(0, len(data["t"]), step))
+    if frame_indices[-1] != len(data["t"]) - 1:
+        frame_indices.append(len(data["t"]) - 1)
+
+    backend = AdaptiveQAnimationBackend(data)
+    manager = AnimationManager(backend=backend, frame_indices=frame_indices, fps=fps)
+
+    if output_path:
+        manager.save(output_path)
+    if show:
+        manager.show()
+    return manager
 
 
 if __name__ == "__main__":

@@ -14,6 +14,8 @@ from ins_gps_fusion_lab.simulation.gps_model import GPSModel
 from ins_gps_fusion_lab.simulation.imu_model import IMUModel
 from ins_gps_fusion_lab.simulation.state_space import compute_B, compute_F, compute_H, compute_Q
 from ins_gps_fusion_lab.simulation.trajectory_generator import TrajectoryGenerator
+from ins_gps_fusion_lab.visualization.animation_backends import UrbanCanyonAnimationBackend
+from ins_gps_fusion_lab.visualization.animation_manager import AnimationManager
 from ins_gps_fusion_lab.visualization.plot_nis import plot_nis
 
 
@@ -71,14 +73,13 @@ def _run_single(
     return est_positions, nis_list, pos_error, t
 
 
-def run_experiment(
+def simulate_urban_canyon(
     duration: float = 20.0,
     dt: float = 0.01,
     gps_rate: int = 10,
     seed: int = 42,
-    save_path: Optional[str] = None,
 ):
-    """Run urban canyon experiment. Three runs: no gating, gating, increased R."""
+    """Run urban canyon simulation and return comparison time-series data."""
     gps = GPSModel(
         sigma_pos=1.0,
         outlier_prob=0.1,
@@ -155,6 +156,37 @@ def run_experiment(
         imu=imu3,
     )
 
+    return {
+        "t": t,
+        "positions": positions,
+        "est1": est1,
+        "est2": est2,
+        "est3": est3,
+        "err1": err1,
+        "err2": err2,
+        "err3": err3,
+        "nis1_times": np.array([x[0] for x in nis1]) if nis1 else np.array([]),
+        "nis1_values": np.array([x[1] for x in nis1]) if nis1 else np.array([]),
+        "nis2_times": np.array([x[0] for x in nis2]) if nis2 else np.array([]),
+        "nis2_values": np.array([x[1] for x in nis2]) if nis2 else np.array([]),
+    }
+
+
+def _plot_static(data: dict, save_path: Optional[str] = None):
+    """Render the original static dashboard from simulation data."""
+    t = data["t"]
+    positions = data["positions"]
+    est1 = data["est1"]
+    est2 = data["est2"]
+    est3 = data["est3"]
+    err1 = data["err1"]
+    err2 = data["err2"]
+    err3 = data["err3"]
+    nis1_times = data["nis1_times"]
+    nis1_values = data["nis1_values"]
+    nis2_times = data["nis2_times"]
+    nis2_values = data["nis2_values"]
+
     # Plot
     fig, axes = plt.subplots(2, 2, figsize=(12, 9))
 
@@ -177,14 +209,12 @@ def run_experiment(
     axes[0, 1].legend()
     axes[0, 1].grid(True, alpha=0.3)
 
-    if nis1:
-        t_nis = np.array([x[0] for x in nis1])
-        plot_nis(np.array([x[1] for x in nis1]), dof=3, t=t_nis, ax=axes[1, 0])
+    if len(nis1_values):
+        plot_nis(nis1_values, dof=3, t=nis1_times, ax=axes[1, 0])
         axes[1, 0].set_title("NIS (No gating)")
 
-    if nis2:
-        t_nis2 = np.array([x[0] for x in nis2])
-        axes[1, 1].plot(t_nis2, [x[1] for x in nis2], "go-", markersize=3)
+    if len(nis2_values):
+        axes[1, 1].plot(nis2_times, nis2_values, "go-", markersize=3)
         axes[1, 1].axhline(y=7.81, color="r", linestyle="--", label="chi2(0.95,3)")
         axes[1, 1].set_xlabel("Time (s)")
         axes[1, 1].set_ylabel("NIS")
@@ -199,6 +229,46 @@ def run_experiment(
     else:
         plt.show()
     return fig
+
+
+def run_experiment(
+    duration: float = 20.0,
+    dt: float = 0.01,
+    gps_rate: int = 10,
+    seed: int = 42,
+    save_path: Optional[str] = None,
+):
+    """Run urban canyon experiment and produce static plots."""
+    data = simulate_urban_canyon(duration=duration, dt=dt, gps_rate=gps_rate, seed=seed)
+    return _plot_static(data, save_path=save_path)
+
+
+def run_animation(
+    duration: float = 20.0,
+    dt: float = 0.01,
+    gps_rate: int = 10,
+    seed: int = 42,
+    fps: int = 20,
+    frame_stride: int = 10,
+    output_path: Optional[str] = None,
+    show: bool = True,
+):
+    """Run urban canyon experiment and render animated comparison playback."""
+    data = simulate_urban_canyon(duration=duration, dt=dt, gps_rate=gps_rate, seed=seed)
+
+    step = max(1, int(frame_stride))
+    frame_indices = list(range(0, len(data["t"]), step))
+    if frame_indices[-1] != len(data["t"]) - 1:
+        frame_indices.append(len(data["t"]) - 1)
+
+    backend = UrbanCanyonAnimationBackend(data)
+    manager = AnimationManager(backend=backend, frame_indices=frame_indices, fps=fps)
+
+    if output_path:
+        manager.save(output_path)
+    if show:
+        manager.show()
+    return manager
 
 
 if __name__ == "__main__":
