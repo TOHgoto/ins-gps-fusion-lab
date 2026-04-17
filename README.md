@@ -2,6 +2,20 @@
 
 **INS-GPS Simulation & Fusion Suite** — an open-source, reusable sensor fusion research and validation toolkit.
 
+## Key Results
+
+<p align="center">
+	<img src="media/readme/gps_dropout.gif" width="32%" alt="GPS dropout and recovery" />
+	<img src="media/readme/urban_canyon.gif" width="32%" alt="Urban canyon outlier handling" />
+	<img src="media/readme/adaptive_q.gif" width="32%" alt="Adaptive Q versus fixed Q" />
+</p>
+
+| Scenario | What to look for |
+|---|---|
+| **GPS dropout** 📉 | During outage, uncertainty and position error grow; after recovery, updates pull the estimate back. |
+| **Urban canyon** 🏙️ | Innovation gating suppresses outlier impact compared with ungated updates. |
+| **Adaptive Q** ⚙️ | Dynamic process-noise scaling improves robustness under Q mismatch. |
+
 ## Positioning
 
 - **Target users**: Researchers, engineers, students — for Kalman filter learning, algorithm validation, prototyping, and teaching
@@ -44,6 +58,41 @@ pytest tests/
 
 # Optional: run tests and generate local reports under results/test_reports/
 python scripts/run_tests.py
+```
+
+### Animated simulation playback
+
+```python
+from experiments.gps_dropout import run_animation as run_dropout_animation
+from experiments.urban_canyon import run_animation as run_urban_animation
+from experiments.adaptive_q import run_animation as run_adaptive_q_animation
+
+# GPS dropout playback (save GIF + show window)
+run_dropout_animation(
+	duration=30.0,
+	frame_stride=20,
+	fps=20,
+	output_path="media/readme/gps_dropout.gif",
+	show=True,
+)
+
+# Urban canyon strategy playback (save GIF, no interactive window)
+run_urban_animation(
+	duration=20.0,
+	frame_stride=10,
+	fps=20,
+	output_path="media/readme/urban_canyon.gif",
+	show=False,
+)
+
+# Adaptive Q playback (save GIF)
+run_adaptive_q_animation(
+	duration=30.0,
+	frame_stride=10,
+	fps=20,
+	output_path="media/readme/adaptive_q.gif",
+	show=False,
+)
 ```
 
 ### Use as a library
