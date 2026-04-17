@@ -2,19 +2,69 @@
 
 **INS-GPS Simulation & Fusion Suite** — an open-source, reusable sensor fusion research and validation toolkit.
 
-## Key Results
-
 <p align="center">
-	<img src="media/readme/gps_dropout.gif" width="32%" alt="GPS dropout and recovery" />
-	<img src="media/readme/urban_canyon.gif" width="32%" alt="Urban canyon outlier handling" />
-	<img src="media/readme/adaptive_q.gif" width="32%" alt="Adaptive Q versus fixed Q" />
+    <a href="#key-results-animated-">
+        <img alt="Key Results" src="https://img.shields.io/badge/Key%20Results-Animated%20Demo-0A7E8C?style=for-the-badge" />
+    </a>
+    <a href="#installation">
+        <img alt="Installation" src="https://img.shields.io/badge/Setup-Installation-1F6FEB?style=for-the-badge" />
+    </a>
+    <a href="#usage">
+        <img alt="Usage" src="https://img.shields.io/badge/Run-Usage-2E8B57?style=for-the-badge" />
+    </a>
+    <a href="#project-structure">
+        <img alt="Project Structure" src="https://img.shields.io/badge/Code-Project%20Structure-6B7280?style=for-the-badge" />
+    </a>
 </p>
 
-| Scenario | What to look for |
-|---|---|
-| **GPS dropout** 📉 | During outage, uncertainty and position error grow; after recovery, updates pull the estimate back. |
-| **Urban canyon** 🏙️ | Innovation gating suppresses outlier impact compared with ungated updates. |
-| **Adaptive Q** ⚙️ | Dynamic process-noise scaling improves robustness under Q mismatch. |
+## Key Results (Animated) 🎬
+
+Showcase GIFs are served from `media/readme/`.
+
+### GPS Dropout Recovery 📉
+
+<p>
+    <img alt="Category" src="https://img.shields.io/badge/Category-Robustness-1F6FEB?style=flat-square" />
+</p>
+
+<p>
+    IMU-only drift grows during GPS outage, then quickly contracts after measurement recovery.
+</p>
+<p align="center">
+    <a href="media/readme/gps_dropout.gif">
+        <img src="media/readme/gps_dropout.gif" width="88%" alt="GPS dropout and recovery card" />
+    </a>
+</p>
+
+### Urban Canyon Robustness 🏙️
+
+<p>
+    <img alt="Category" src="https://img.shields.io/badge/Category-Outlier%20Handling-1F6FEB?style=flat-square" />
+</p>
+
+<p>
+    Innovation gating suppresses outlier injections and keeps trajectory estimation stable.
+</p>
+<p align="center">
+    <a href="media/readme/urban_canyon.gif">
+        <img src="media/readme/urban_canyon.gif" width="88%" alt="Urban canyon robustness card" />
+    </a>
+</p>
+
+### Adaptive Q Under Mismatch ⚙️
+
+<p>
+    <img alt="Category" src="https://img.shields.io/badge/Category-Adaptivity-1F6FEB?style=flat-square" />
+</p>
+
+<p>
+    Dynamic process-noise scaling improves consistency when the nominal Q model is too optimistic.
+</p>
+<p align="center">
+    <a href="media/readme/adaptive_q.gif">
+        <img src="media/readme/adaptive_q.gif" width="88%" alt="Adaptive Q mismatch card" />
+    </a>
+</p>
 
 ## Positioning
 
@@ -35,15 +85,20 @@ pip install -e ".[dev]"
 
 ## Usage
 
-### Run examples
+### Quick run
 
 ```bash
-# Basic INS-GPS fusion (trajectory + IMU + GPS + Kalman filter)
+# Fast sanity check
 python -m experiments.run_basic_fusion
 
-# GPS dropout (20s loss at 20-40s)
+# Main reliability demo
 python -m experiments.gps_dropout
+```
 
+<details>
+<summary>More experiment commands</summary>
+
+```bash
 # Q mismatch (filter inconsistency)
 python -m experiments.test_q_mismatch
 
@@ -60,6 +115,8 @@ pytest tests/
 python scripts/run_tests.py
 ```
 
+</details>
+
 ### Animated simulation playback
 
 ```python
@@ -69,29 +126,29 @@ from experiments.adaptive_q import run_animation as run_adaptive_q_animation
 
 # GPS dropout playback (save GIF + show window)
 run_dropout_animation(
-	duration=30.0,
-	frame_stride=20,
-	fps=20,
-	output_path="media/readme/gps_dropout.gif",
-	show=True,
+    duration=30.0,
+    frame_stride=20,
+    fps=20,
+    output_path="results/figures/gps_dropout.gif",
+    show=True,
 )
 
 # Urban canyon strategy playback (save GIF, no interactive window)
 run_urban_animation(
-	duration=20.0,
-	frame_stride=10,
-	fps=20,
-	output_path="media/readme/urban_canyon.gif",
-	show=False,
+    duration=20.0,
+    frame_stride=10,
+    fps=20,
+    output_path="results/figures/urban_canyon.gif",
+    show=False,
 )
 
 # Adaptive Q playback (save GIF)
 run_adaptive_q_animation(
-	duration=30.0,
-	frame_stride=10,
-	fps=20,
-	output_path="media/readme/adaptive_q.gif",
-	show=False,
+    duration=30.0,
+    frame_stride=10,
+    fps=20,
+    output_path="results/figures/adaptive_q.gif",
+    show=False,
 )
 ```
 
