@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run all tests and save results to reports/test_results/."""
+"""Run all tests and save results to results/test_reports/."""
 
 import json
 import subprocess

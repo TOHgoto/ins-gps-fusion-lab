@@ -5,7 +5,7 @@
 ## Positioning
 
 - **Target users**: Researchers, engineers, students — for Kalman filter learning, algorithm validation, prototyping, and teaching
-- **Coverage**: IMU error modeling, GPS modeling, state space design, Kalman derivation, covariance propagation, Q/R tuning, NIS test, Innovation Gating, GPS dropout, urban canyon simulation, adaptive Q
+- **Coverage**: IMU and GPS modeling, state space design, Q/R tuning, NIS test, innovation gating, GPS dropout, urban canyon simulation, adaptive Q
 - **Engineering value**: Reproducible experiments, configurable simulation, extensible filter interface, ready for algorithm comparison and tuning
 
 ## Installation
@@ -42,15 +42,9 @@ python -m experiments.adaptive_q
 # Run tests
 pytest tests/
 
-# Run tests and save results to results/test_reports/
+# Optional: run tests and generate local reports under results/test_reports/
 python scripts/run_tests.py
 ```
-
-Test results are stored in `results/test_reports/`:
-- `summary.md` — human-readable summary by module
-- `summary.json` — machine-readable JSON
-- `junit.xml` — for CI integration
-- `pytest_output.txt` — raw pytest output
 
 ### Use as a library
 
@@ -71,7 +65,7 @@ position_meas, valid = gps.generate_measurement(true_position)
 
 ```
 ins-gps-fusion-lab/
-├── docs/             # Mathematical derivations and design docs
+├── docs/             # Theory and design notes
 ├── src/
 │   └── ins_gps_fusion_lab/
 │       ├── simulation/       # IMU, GPS, trajectory models
